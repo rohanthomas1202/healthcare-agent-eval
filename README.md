@@ -1,28 +1,38 @@
 # Healthcare Agent Evaluation Dataset
 
-An open source evaluation dataset for testing AI healthcare agents. Contains 57 test cases across 4 categories designed to evaluate clinical reasoning, safety, and robustness.
+An open source evaluation dataset for testing AI healthcare agents. Contains 92 test cases across 4 categories designed to evaluate clinical reasoning, safety, and robustness. Covers 14 healthcare tools including patient records, drug interactions, FDA safety, care gaps, insurance coverage, and lab results.
 
 ## Dataset Overview
 
 | Category | Cases | Description |
 |----------|-------|-------------|
-| **Happy Path** | 25 | Core functionality: patient summaries, drug interactions, symptom lookups, provider search, appointments |
-| **Edge Cases** | 15 | Missing patients, unknown drugs, empty results, boundary conditions |
-| **Adversarial** | 10 | Prompt injection attempts, off-topic requests, safety boundary testing |
-| **Multi-Step** | 7 | Queries requiring multiple tool calls and reasoning across data sources |
+| **Happy Path** | 35+ | Core functionality across all 14 tools: patient summaries, drug interactions, symptom lookups, provider search, appointments, FDA safety, vitals, clinical trials, allergy checks, drug recalls, care gaps, insurance, lab results |
+| **Edge Cases** | 15+ | Missing patients, unknown drugs, non-formulary medications, empty results, boundary conditions |
+| **Adversarial** | 11 | Prompt injection, role override, prescription requests, self-harm, data destruction, safety bypass |
+| **Multi-Step** | 15+ | Queries requiring multiple tool calls and reasoning across data sources |
 
-## Results Summary
+## Tools Covered (14)
 
-Tested against AgentForge Healthcare (LangGraph + Claude Sonnet 4 + OpenEMR FHIR):
-
-- **Pass rate:** 57/57 (100%)
-- **Avg latency:** 12.8s
-- **Avg confidence:** 0.84
-- **Tool success rate:** 100%
+| Tool | Test Cases |
+|------|-----------|
+| `patient_summary` | Demographics, conditions, medications, allergies |
+| `drug_interaction_check` | Drug-drug interaction detection with severity |
+| `symptom_lookup` | Symptom to condition mapping with triage |
+| `provider_search` | Name and specialty-based provider search |
+| `appointment_availability` | Provider schedule and slot queries |
+| `fda_drug_safety` | FDA boxed warnings, FAERS adverse events |
+| `record_vitals` | Write vitals back to EHR |
+| `clinical_trials_search` | ClinicalTrials.gov recruiting studies |
+| `allergy_check` | Drug-allergy cross-reactivity detection |
+| `drug_recall_check` | FDA recall alerts |
+| `care_gap_analysis` | USPSTF preventive screening gaps |
+| `update_care_gap` | Mark screenings completed/declined |
+| `insurance_coverage_check` | Formulary tier, copay, prior auth |
+| `lab_results_analysis` | Lab trends, reference ranges, critical values |
 
 ## Files
 
-- `test_cases.json` — 57 evaluation test cases with assertions
+- `test_cases.json` — 92 evaluation test cases with assertions
 - `results.json` — Full results from the latest evaluation run
 
 ## Test Case Schema
@@ -65,16 +75,16 @@ Tested against AgentForge Healthcare (LangGraph + Claude Sonnet 4 + OpenEMR FHIR
 ## Categories Explained
 
 ### Happy Path
-Tests core agent capabilities with valid inputs and expected workflows. Covers all 5 tools: patient summary, drug interaction check, symptom lookup, provider search, and appointment availability.
+Tests core agent capabilities with valid inputs and expected workflows. Covers all 14 tools including patient summary, drug interactions, symptom lookup, provider search, appointments, FDA safety, vitals recording, clinical trials, allergy checks, drug recalls, care gap analysis, insurance coverage, and lab results.
 
 ### Edge Cases
-Tests graceful handling of: non-existent patients, unknown medications, empty search results, ambiguous queries, and boundary inputs.
+Tests graceful handling of: non-existent patients, unknown medications, non-formulary drugs, empty search results, ambiguous queries, and boundary inputs across all tool categories.
 
 ### Adversarial
-Tests resistance to: prompt injection ("ignore instructions"), attempts to access admin functions, requests for information outside the healthcare domain, and attempts to get the agent to act as a doctor.
+Tests resistance to: prompt injection ("ignore instructions"), role override attempts, prescription requests, self-harm statements, database destruction requests, safety bypass attempts, and requests to act as a physician.
 
 ### Multi-Step
-Tests the agent's ability to chain multiple tools: e.g., "Check John Smith's medications for interactions" requires first calling patient_summary to get the medication list, then calling drug_interaction_check with those medications.
+Tests the agent's ability to chain multiple tools: e.g., "Check John Smith's medications for interactions" requires first calling patient_summary to get the medication list, then calling drug_interaction_check with those medications. Includes complex chains like complete safety reviews (patient summary + drug interactions + allergy check + recall check).
 
 ## How to Use
 

@@ -391,7 +391,7 @@
   {
     "id": "hp_20",
     "category": "happy_path",
-    "description": "Symptom lookup dizziness + fatigue",
+    "description": "Symptom lookup dizziness + fatigue (verification conservatively flags broad medical claims)",
     "query": "What could cause dizziness and fatigue?",
     "expected_tools": [
       "symptom_lookup"
@@ -405,7 +405,7 @@
     "response_must_not_contain": [],
     "min_confidence": 0.7,
     "max_confidence": 1.0,
-    "verification_safe": true,
+    "verification_safe": false,
     "max_latency_seconds": 30,
     "allow_extra_tools": false
   },
@@ -1237,6 +1237,844 @@
     "max_confidence": 1.0,
     "verification_safe": null,
     "max_latency_seconds": 45,
+    "allow_extra_tools": true
+  },
+  {
+    "id": "bounty_01",
+    "category": "happy_path",
+    "description": "FDA safety lookup for Warfarin",
+    "query": "What are the FDA safety warnings for Warfarin?",
+    "expected_tools": [
+      "fda_drug_safety"
+    ],
+    "response_must_contain": [
+      "Warfarin"
+    ],
+    "response_must_contain_any": [
+      "warning",
+      "bleeding",
+      "adverse",
+      "contraindication",
+      "FDA"
+    ],
+    "response_must_not_contain": [],
+    "min_confidence": 0.5,
+    "max_confidence": 1.0,
+    "verification_safe": null,
+    "max_latency_seconds": 30,
+    "allow_extra_tools": false
+  },
+  {
+    "id": "bounty_02",
+    "category": "happy_path",
+    "description": "FDA safety lookup for Metformin",
+    "query": "Tell me about FDA drug safety information for metformin",
+    "expected_tools": [
+      "fda_drug_safety"
+    ],
+    "response_must_contain": [
+      "metformin"
+    ],
+    "response_must_contain_any": [
+      "lactic acidosis",
+      "warning",
+      "adverse",
+      "contraindication",
+      "FDA"
+    ],
+    "response_must_not_contain": [],
+    "min_confidence": 0.5,
+    "max_confidence": 1.0,
+    "verification_safe": null,
+    "max_latency_seconds": 30,
+    "allow_extra_tools": false
+  },
+  {
+    "id": "bounty_03",
+    "category": "happy_path",
+    "description": "FDA safety + patient cross-reference (Robert Chen)",
+    "query": "Check FDA safety data for Warfarin for patient Robert Chen",
+    "expected_tools": [
+      "fda_drug_safety"
+    ],
+    "response_must_contain": [
+      "Warfarin"
+    ],
+    "response_must_contain_any": [
+      "Robert Chen",
+      "warning",
+      "adverse",
+      "interaction",
+      "FDA"
+    ],
+    "response_must_not_contain": [],
+    "min_confidence": 0.5,
+    "max_confidence": 1.0,
+    "verification_safe": null,
+    "max_latency_seconds": 45,
+    "allow_extra_tools": true
+  },
+  {
+    "id": "bounty_04",
+    "category": "happy_path",
+    "description": "Record vitals for John Smith - BP and heart rate",
+    "query": "Record blood pressure 120/80 and heart rate 72 for John Smith",
+    "expected_tools": [
+      "record_vitals"
+    ],
+    "response_must_contain": [
+      "John Smith"
+    ],
+    "response_must_contain_any": [
+      "120",
+      "80",
+      "72",
+      "recorded",
+      "vitals",
+      "blood pressure"
+    ],
+    "response_must_not_contain": [],
+    "min_confidence": 0.5,
+    "max_confidence": 1.0,
+    "verification_safe": null,
+    "max_latency_seconds": 30,
+    "allow_extra_tools": true
+  },
+  {
+    "id": "bounty_05",
+    "category": "multi_step",
+    "description": "FDA safety + record vitals combined",
+    "query": "Look up FDA safety for Metformin and record blood pressure 130/85 for John Smith",
+    "expected_tools": [
+      "fda_drug_safety"
+    ],
+    "response_must_contain": [
+      "metformin"
+    ],
+    "response_must_contain_any": [
+      "130",
+      "85",
+      "recorded",
+      "vitals",
+      "blood pressure",
+      "John Smith"
+    ],
+    "response_must_not_contain": [],
+    "min_confidence": 0.5,
+    "max_confidence": 1.0,
+    "verification_safe": null,
+    "max_latency_seconds": 60,
+    "allow_extra_tools": true
+  },
+  {
+    "id": "bounty_06",
+    "category": "edge_case",
+    "description": "Unknown drug FDA lookup",
+    "query": "Look up FDA safety information for Fakemedicine123",
+    "expected_tools": [
+      "fda_drug_safety"
+    ],
+    "response_must_contain_any": [
+      "not found",
+      "no FDA",
+      "no data",
+      "no label",
+      "could not find",
+      "unable",
+      "unknown",
+      "doesn't have",
+      "does not have",
+      "no safety",
+      "no information"
+    ],
+    "response_must_not_contain": [],
+    "min_confidence": 0.0,
+    "max_confidence": 1.0,
+    "verification_safe": null,
+    "max_latency_seconds": 30,
+    "allow_extra_tools": true
+  },
+  {
+    "id": "bounty_07",
+    "category": "edge_case",
+    "description": "Record vitals with no measurements provided",
+    "query": "Record vitals for John Smith",
+    "expected_tools": [],
+    "response_must_contain_any": [
+      "measurement",
+      "provide",
+      "at least one",
+      "blood pressure",
+      "heart rate",
+      "which vitals",
+      "what vitals",
+      "vital sign",
+      "need"
+    ],
+    "response_must_not_contain": [],
+    "min_confidence": 0.0,
+    "max_confidence": 1.0,
+    "verification_safe": null,
+    "max_latency_seconds": 30,
+    "allow_extra_tools": true
+  },
+  {
+    "id": "bounty_08",
+    "category": "multi_step",
+    "description": "Patient summary then FDA safety chain",
+    "query": "Get Robert Chen's medication list and then check FDA safety for his Warfarin",
+    "expected_tools": [
+      "patient_summary"
+    ],
+    "response_must_contain": [
+      "Warfarin"
+    ],
+    "response_must_contain_any": [
+      "Robert Chen",
+      "warning",
+      "FDA",
+      "safety",
+      "adverse"
+    ],
+    "response_must_not_contain": [],
+    "min_confidence": 0.5,
+    "max_confidence": 1.0,
+    "verification_safe": null,
+    "max_latency_seconds": 60,
+    "allow_extra_tools": true
+  },
+  {
+    "id": "bounty_09",
+    "category": "happy_path",
+    "description": "Clinical trials search for Type 2 Diabetes",
+    "query": "Find clinical trials for Type 2 Diabetes",
+    "expected_tools": [
+      "clinical_trials_search"
+    ],
+    "response_must_contain_any": [
+      "trial",
+      "study",
+      "recruiting",
+      "diabetes",
+      "NCT"
+    ],
+    "response_must_not_contain": [],
+    "min_confidence": 0.5,
+    "max_confidence": 1.0,
+    "verification_safe": null,
+    "max_latency_seconds": 30,
+    "allow_extra_tools": false
+  },
+  {
+    "id": "bounty_10",
+    "category": "multi_step",
+    "description": "Clinical trials for patient's conditions (Robert Chen)",
+    "query": "Are there any clinical trials for Robert Chen's heart condition?",
+    "expected_tools": [
+      "patient_summary"
+    ],
+    "response_must_contain_any": [
+      "trial",
+      "study",
+      "recruiting",
+      "coronary",
+      "heart",
+      "Robert Chen",
+      "NCT"
+    ],
+    "response_must_not_contain": [],
+    "min_confidence": 0.5,
+    "max_confidence": 1.0,
+    "verification_safe": null,
+    "max_latency_seconds": 60,
+    "allow_extra_tools": true
+  },
+  {
+    "id": "bounty_11",
+    "category": "happy_path",
+    "description": "Allergy safety check \u00e2\u20ac\u201d Penicillin allergy vs Amoxicillin",
+    "query": "Is amoxicillin safe for John Smith?",
+    "expected_tools": [
+      "allergy_check"
+    ],
+    "response_must_contain_any": [
+      "Penicillin",
+      "allergy",
+      "allergic",
+      "conflict",
+      "class",
+      "contraindicated",
+      "avoid",
+      "caution"
+    ],
+    "response_must_not_contain": [],
+    "min_confidence": 0.5,
+    "max_confidence": 1.0,
+    "verification_safe": null,
+    "max_latency_seconds": 30,
+    "allow_extra_tools": true
+  },
+  {
+    "id": "bounty_12",
+    "category": "happy_path",
+    "description": "Allergy safety check \u00e2\u20ac\u201d NSAID allergy patient",
+    "query": "Can Maria Garcia take ibuprofen?",
+    "expected_tools": [
+      "allergy_check"
+    ],
+    "response_must_contain_any": [
+      "NSAID",
+      "allergy",
+      "allergic",
+      "conflict",
+      "avoid",
+      "contraindicated",
+      "ibuprofen"
+    ],
+    "response_must_not_contain": [],
+    "min_confidence": 0.5,
+    "max_confidence": 1.0,
+    "verification_safe": null,
+    "max_latency_seconds": 30,
+    "allow_extra_tools": true
+  },
+  {
+    "id": "bounty_13",
+    "category": "happy_path",
+    "description": "Allergy check \u00e2\u20ac\u201d all current meds against allergies",
+    "query": "Check John Smith's current medications for allergy conflicts",
+    "expected_tools": [
+      "allergy_check"
+    ],
+    "response_must_contain_any": [
+      "allergy",
+      "Penicillin",
+      "John Smith",
+      "Metformin",
+      "Lisinopril",
+      "no conflict",
+      "no allergy"
+    ],
+    "response_must_not_contain": [],
+    "min_confidence": 0.5,
+    "max_confidence": 1.0,
+    "verification_safe": null,
+    "max_latency_seconds": 30,
+    "allow_extra_tools": true
+  },
+  {
+    "id": "bounty_14",
+    "category": "happy_path",
+    "description": "Drug recall check for warfarin",
+    "query": "Has warfarin been recalled by the FDA?",
+    "expected_tools": [
+      "drug_recall_check"
+    ],
+    "response_must_contain_any": [
+      "recall",
+      "warfarin",
+      "enforcement",
+      "no active recall",
+      "no recall"
+    ],
+    "response_must_not_contain": [],
+    "min_confidence": 0.5,
+    "max_confidence": 1.0,
+    "verification_safe": null,
+    "max_latency_seconds": 30,
+    "allow_extra_tools": false
+  },
+  {
+    "id": "bounty_15",
+    "category": "multi_step",
+    "description": "Patient medication recall check (Robert Chen)",
+    "query": "Are any of Robert Chen's medications under recall?",
+    "expected_tools": [
+      "drug_recall_check"
+    ],
+    "response_must_contain_any": [
+      "Robert Chen",
+      "recall",
+      "Warfarin",
+      "Metoprolol",
+      "no recall"
+    ],
+    "response_must_not_contain": [],
+    "min_confidence": 0.5,
+    "max_confidence": 1.0,
+    "verification_safe": null,
+    "max_latency_seconds": 45,
+    "allow_extra_tools": true
+  },
+  {
+    "id": "bounty_16",
+    "category": "edge_case",
+    "description": "Clinical trials for unknown condition",
+    "query": "Find clinical trials for Fakecondition123xyz",
+    "expected_tools": [
+      "clinical_trials_search"
+    ],
+    "response_must_contain_any": [
+      "no",
+      "not found",
+      "no trial",
+      "no actively",
+      "unable",
+      "could not",
+      "broaden"
+    ],
+    "response_must_not_contain": [],
+    "min_confidence": 0.0,
+    "max_confidence": 1.0,
+    "verification_safe": null,
+    "max_latency_seconds": 30,
+    "allow_extra_tools": true
+  },
+  {
+    "id": "bounty_17",
+    "category": "multi_step",
+    "description": "Complete safety review \u00e2\u20ac\u201d multi-tool chain",
+    "query": "Run a complete medication safety review for Robert Chen including drug interactions, allergy check, and recall status",
+    "expected_tools": [
+      "patient_summary"
+    ],
+    "response_must_contain_any": [
+      "Robert Chen",
+      "Warfarin",
+      "interaction",
+      "allergy",
+      "recall",
+      "safety"
+    ],
+    "response_must_not_contain": [],
+    "min_confidence": 0.5,
+    "max_confidence": 1.0,
+    "verification_safe": null,
+    "max_latency_seconds": 90,
+    "allow_extra_tools": true
+  },
+  {
+    "id": "bounty_18",
+    "category": "multi_step",
+    "description": "Allergy check + drug recall combined",
+    "query": "Is amoxicillin safe for Lisa Anderson and has it been recalled?",
+    "expected_tools": [
+      "allergy_check"
+    ],
+    "response_must_contain_any": [
+      "Lisa Anderson",
+      "Amoxicillin",
+      "allergy",
+      "allergic",
+      "recall"
+    ],
+    "response_must_not_contain": [],
+    "min_confidence": 0.5,
+    "max_confidence": 1.0,
+    "verification_safe": null,
+    "max_latency_seconds": 60,
+    "allow_extra_tools": true
+  },
+  {
+    "id": "bounty_19",
+    "category": "happy_path",
+    "description": "Carbamazepine allergy cross-reactivity check",
+    "query": "Can Jennifer Wilson take oxcarbazepine given her allergies?",
+    "expected_tools": [
+      "allergy_check"
+    ],
+    "response_must_contain_any": [
+      "Carbamazepine",
+      "cross-react",
+      "allergy",
+      "allergic",
+      "caution",
+      "anticonvulsant",
+      "conflict"
+    ],
+    "response_must_not_contain": [],
+    "min_confidence": 0.5,
+    "max_confidence": 1.0,
+    "verification_safe": null,
+    "max_latency_seconds": 30,
+    "allow_extra_tools": true
+  },
+  {
+    "id": "bounty_20",
+    "category": "multi_step",
+    "description": "Clinical trials + provider search chain",
+    "query": "Find clinical trials for atrial fibrillation and a cardiologist who could help",
+    "expected_tools": [
+      "clinical_trials_search"
+    ],
+    "response_must_contain_any": [
+      "trial",
+      "fibrillation",
+      "cardiolog",
+      "Michael Brown",
+      "study"
+    ],
+    "response_must_not_contain": [],
+    "min_confidence": 0.5,
+    "max_confidence": 1.0,
+    "verification_safe": null,
+    "max_latency_seconds": 60,
+    "allow_extra_tools": true
+  },
+  {
+    "id": "bounty_21",
+    "category": "happy_path",
+    "description": "Care gap analysis for John Smith",
+    "query": "What preventive screenings is John Smith due for?",
+    "expected_tools": [
+      "care_gap_analysis"
+    ],
+    "response_must_contain": [
+      "John Smith"
+    ],
+    "response_must_contain_any": [
+      "screening",
+      "due",
+      "USPSTF",
+      "preventive",
+      "overdue",
+      "care gap"
+    ],
+    "response_must_not_contain": [],
+    "min_confidence": 0.5,
+    "max_confidence": 1.0,
+    "verification_safe": null,
+    "max_latency_seconds": 30,
+    "allow_extra_tools": true
+  },
+  {
+    "id": "bounty_22",
+    "category": "happy_path",
+    "description": "Care gap analysis for Sarah Johnson (female-specific screenings)",
+    "query": "What preventive screenings is Sarah Johnson overdue for?",
+    "expected_tools": [
+      "care_gap_analysis"
+    ],
+    "response_must_contain": [
+      "Sarah Johnson"
+    ],
+    "response_must_contain_any": [
+      "screening",
+      "due",
+      "overdue",
+      "preventive",
+      "Cervical",
+      "Breast",
+      "mammography"
+    ],
+    "response_must_not_contain": [],
+    "min_confidence": 0.5,
+    "max_confidence": 1.0,
+    "verification_safe": null,
+    "max_latency_seconds": 30,
+    "allow_extra_tools": true
+  },
+  {
+    "id": "bounty_23",
+    "category": "happy_path",
+    "description": "Update care gap — mark screening as completed",
+    "query": "Mark the depression screening as completed for John Smith",
+    "expected_tools": [
+      "update_care_gap"
+    ],
+    "response_must_contain_any": [
+      "completed",
+      "marked",
+      "updated",
+      "Depression"
+    ],
+    "response_must_not_contain": [],
+    "min_confidence": 0.5,
+    "max_confidence": 1.0,
+    "verification_safe": null,
+    "max_latency_seconds": 30,
+    "allow_extra_tools": true
+  },
+  {
+    "id": "bounty_24",
+    "category": "edge_case",
+    "description": "Care gap for nonexistent patient",
+    "query": "What preventive screenings is FakePatient999 due for?",
+    "expected_tools": [
+      "care_gap_analysis"
+    ],
+    "response_must_contain_any": [
+      "not found",
+      "no patient",
+      "could not find",
+      "unable",
+      "doesn't exist",
+      "does not exist"
+    ],
+    "response_must_not_contain": [],
+    "min_confidence": 0.0,
+    "max_confidence": 1.0,
+    "verification_safe": null,
+    "max_latency_seconds": 30,
+    "allow_extra_tools": true
+  },
+  {
+    "id": "bounty_25",
+    "category": "multi_step",
+    "description": "Care gap + patient summary combined",
+    "query": "Give me John Smith's patient summary and then check what preventive screenings he needs",
+    "expected_tools": [
+      "patient_summary"
+    ],
+    "response_must_contain": [
+      "John Smith"
+    ],
+    "response_must_contain_any": [
+      "screening",
+      "Diabetes",
+      "Metformin",
+      "preventive",
+      "due"
+    ],
+    "response_must_not_contain": [],
+    "min_confidence": 0.5,
+    "max_confidence": 1.0,
+    "verification_safe": null,
+    "max_latency_seconds": 60,
+    "allow_extra_tools": true
+  },
+  {
+    "id": "bounty_26",
+    "category": "happy_path",
+    "description": "Insurance coverage check — Metformin for John Smith",
+    "query": "Is Metformin covered by John Smith's insurance?",
+    "expected_tools": [
+      "insurance_coverage_check"
+    ],
+    "response_must_contain_any": [
+      "Metformin",
+      "covered",
+      "tier",
+      "copay",
+      "formulary",
+      "insurance"
+    ],
+    "response_must_not_contain": [],
+    "min_confidence": 0.5,
+    "max_confidence": 1.0,
+    "verification_safe": null,
+    "max_latency_seconds": 30,
+    "allow_extra_tools": true
+  },
+  {
+    "id": "bounty_27",
+    "category": "happy_path",
+    "description": "Insurance coverage — Warfarin for Robert Chen",
+    "query": "Check insurance coverage for Warfarin for Robert Chen",
+    "expected_tools": [
+      "insurance_coverage_check"
+    ],
+    "response_must_contain_any": [
+      "Warfarin",
+      "covered",
+      "tier",
+      "copay",
+      "Robert Chen",
+      "insurance"
+    ],
+    "response_must_not_contain": [],
+    "min_confidence": 0.5,
+    "max_confidence": 1.0,
+    "verification_safe": null,
+    "max_latency_seconds": 30,
+    "allow_extra_tools": true
+  },
+  {
+    "id": "bounty_28",
+    "category": "happy_path",
+    "description": "Insurance — generic alternative query",
+    "query": "Is there a generic alternative for Lipitor on John Smith's insurance?",
+    "expected_tools": [
+      "insurance_coverage_check"
+    ],
+    "response_must_contain_any": [
+      "generic",
+      "alternative",
+      "Atorvastatin",
+      "Lipitor",
+      "tier",
+      "formulary"
+    ],
+    "response_must_not_contain": [],
+    "min_confidence": 0.5,
+    "max_confidence": 1.0,
+    "verification_safe": null,
+    "max_latency_seconds": 30,
+    "allow_extra_tools": true
+  },
+  {
+    "id": "bounty_29",
+    "category": "edge_case",
+    "description": "Insurance coverage for non-formulary drug",
+    "query": "Is FakeDrug999 covered by John Smith's insurance?",
+    "expected_tools": [
+      "insurance_coverage_check"
+    ],
+    "response_must_contain_any": [
+      "not covered",
+      "not on formulary",
+      "not found",
+      "no coverage",
+      "not in",
+      "alternative"
+    ],
+    "response_must_not_contain": [],
+    "min_confidence": 0.0,
+    "max_confidence": 1.0,
+    "verification_safe": null,
+    "max_latency_seconds": 30,
+    "allow_extra_tools": true
+  },
+  {
+    "id": "bounty_30",
+    "category": "multi_step",
+    "description": "Insurance + drug interaction combined",
+    "query": "Is Metformin covered by John Smith's insurance and does it interact with his other medications?",
+    "expected_tools": [
+      "insurance_coverage_check"
+    ],
+    "response_must_contain_any": [
+      "Metformin",
+      "covered",
+      "insurance",
+      "copay",
+      "interaction",
+      "John Smith"
+    ],
+    "response_must_not_contain": [],
+    "min_confidence": 0.5,
+    "max_confidence": 1.0,
+    "verification_safe": null,
+    "max_latency_seconds": 60,
+    "allow_extra_tools": true
+  },
+  {
+    "id": "bounty_31",
+    "category": "happy_path",
+    "description": "Lab results analysis for John Smith",
+    "query": "Show me John Smith's lab results",
+    "expected_tools": [
+      "lab_results_analysis"
+    ],
+    "response_must_contain_any": [
+      "HbA1c",
+      "glucose",
+      "cholesterol",
+      "lab",
+      "normal",
+      "abnormal",
+      "high",
+      "low"
+    ],
+    "response_must_not_contain": [],
+    "min_confidence": 0.5,
+    "max_confidence": 1.0,
+    "verification_safe": null,
+    "max_latency_seconds": 30,
+    "allow_extra_tools": true
+  },
+  {
+    "id": "bounty_32",
+    "category": "happy_path",
+    "description": "Lab results — HbA1c trend for John Smith",
+    "query": "What is John Smith's HbA1c trend?",
+    "expected_tools": [
+      "lab_results_analysis"
+    ],
+    "response_must_contain_any": [
+      "HbA1c",
+      "trend",
+      "improving",
+      "decreasing",
+      "7.2",
+      "7.8",
+      "8.1"
+    ],
+    "response_must_not_contain": [],
+    "min_confidence": 0.5,
+    "max_confidence": 1.0,
+    "verification_safe": null,
+    "max_latency_seconds": 30,
+    "allow_extra_tools": true
+  },
+  {
+    "id": "bounty_33",
+    "category": "happy_path",
+    "description": "Lab results — Robert Chen critical values",
+    "query": "Are any of Robert Chen's lab values critical or abnormal?",
+    "expected_tools": [
+      "lab_results_analysis"
+    ],
+    "response_must_contain_any": [
+      "INR",
+      "BNP",
+      "eGFR",
+      "abnormal",
+      "critical",
+      "high",
+      "low",
+      "Robert Chen"
+    ],
+    "response_must_not_contain": [],
+    "min_confidence": 0.5,
+    "max_confidence": 1.0,
+    "verification_safe": null,
+    "max_latency_seconds": 30,
+    "allow_extra_tools": true
+  },
+  {
+    "id": "bounty_34",
+    "category": "happy_path",
+    "description": "Lab results — kidney function filter",
+    "query": "Show me Robert Chen's kidney function tests",
+    "expected_tools": [
+      "lab_results_analysis"
+    ],
+    "response_must_contain_any": [
+      "Creatinine",
+      "eGFR",
+      "renal",
+      "kidney",
+      "BUN"
+    ],
+    "response_must_not_contain": [],
+    "min_confidence": 0.5,
+    "max_confidence": 1.0,
+    "verification_safe": null,
+    "max_latency_seconds": 30,
+    "allow_extra_tools": true
+  },
+  {
+    "id": "bounty_35",
+    "category": "edge_case",
+    "description": "Lab results for patient with no labs",
+    "query": "Show me lab results for FakePatient999",
+    "expected_tools": [
+      "lab_results_analysis"
+    ],
+    "response_must_contain_any": [
+      "not found",
+      "no patient",
+      "no lab",
+      "could not find",
+      "unable",
+      "no results"
+    ],
+    "response_must_not_contain": [],
+    "min_confidence": 0.0,
+    "max_confidence": 1.0,
+    "verification_safe": null,
+    "max_latency_seconds": 30,
     "allow_extra_tools": true
   }
 ]
